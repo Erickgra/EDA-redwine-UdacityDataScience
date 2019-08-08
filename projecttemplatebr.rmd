@@ -1,0 +1,412 @@
+EDA base RED Wine por Ericsson Graciolli
+========================================================
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+# Carregue aqui todos os pacotes utilizados 
+# na sua análise realizada neste arquivo fonte.
+
+# Note que o parâmetro "echo" foi definido como FALSE neste código.
+# Isso previne que o código apresente resultados formatados em HTML.
+# Você deve definir echo=FALSE para todos os blocos de código no seu arquivo.
+
+library(ggplot2)
+library(scales)
+library(memisc)
+library(RColorBrewer)
+library(lattice)
+library(MASS)
+library(dplyr)
+library(reshape)
+library(gridExtra)
+library('RCurl')
+library('bitops')
+library(reshape)
+library(plyr)
+library(GGally)
+library(ggpubr)
+library(tidyverse)
+library(Hmisc)
+library(corrplot)
+library(ggpubr)
+suppressMessages(library(psych))
+```
+
+```{r echo=FALSE, Load_the_Data}
+# Carregamento dos dados
+#A base de dados será armazenada na variavel vinho_tinto
+vinho_tinto <- read.csv('wineQualityReds.csv')
+
+#Vamos observar a estrutura de variaveis presentes na base de dados
+str(vinho_tinto)
+
+#E também visualizaremos um sumário para cada variavel, informandos os valores dos quartis;
+summary(vinho_tinto)
+
+#Criaremos uma variavel categorica para refletir os valores atribuidos a variavel quality e facilitar as proximas analises.
+vinho_tinto$avaliacao <- ifelse(vinho_tinto$quality <= 4, 'baixa', ifelse(
+  vinho_tinto$quality <= 6, 'média', 'alta'))
+
+#Ordenando pela variavel avaliacao
+vinho_tinto$avaliacao <- ordered(vinho_tinto$avaliacao,
+                       levels = c('baixa', 'média', 'alta'))
+```
+
+# Seção de Gráficos Univariados
+```{r echo=FALSE, Univariate_Plots}
+#Histograma da variavell qualidade
+ggplot(aes(quality), data = vinho_tinto) +
+  geom_histogram(color = 'gray',fill = I('blue'))
+
+#Histograma da variavel qualidade segmentada por avaliacao
+ggplot(aes(quality, fill = avaliacao), data = vinho_tinto) +
+  geom_histogram()
+
+#Tabela com a quantidade de ocorrencias em cada categoria da variavel avaliacao
+table(vinho_tinto$avaliacao)
+
+#Podemos observar a distribuicao das demais variaveis numericas em um grafico consolidado
+p1 <- ggplot(aes(x = fixed.acidity), data = vinho_tinto) +
+  geom_bar(color='red', fill = I('#9d0944'))
+
+p2 <- ggplot(aes(x = volatile.acidity), data = vinho_tinto) +
+  geom_bar(color='red', fill = I('#9d0944'))
+
+p3 <- ggplot(aes(x = citric.acid), data = vinho_tinto) +
+  geom_bar(color='red', fill = I('#9d0944'))
+
+p4 <- ggplot(aes(x = residual.sugar), data = vinho_tinto) + 
+  geom_bar(color='red', fill = I('#9d0944'))
+
+p5 <- ggplot(aes(x = chlorides), data = vinho_tinto) +
+  geom_bar(color='red', fill = I('#9d0944'))
+
+p6 <- ggplot(aes(x = free.sulfur.dioxide), data = vinho_tinto) +  
+  geom_bar(color='red', fill = I('#9d0944'))
+
+p7 <- ggplot(aes(x = total.sulfur.dioxide), data = vinho_tinto) +
+  geom_bar(color='red', fill = I('#9d0944'))
+
+p8 <- ggplot(aes(x = density), data = vinho_tinto) +
+  geom_bar(color='red', fill = I('#9d0944'))
+
+p9 <- ggplot(aes(x = pH), data = vinho_tinto) +
+  geom_bar(color='red', fill = I('#9d0944'))
+
+p10 <- ggplot(aes(x = sulphates), data = vinho_tinto) +
+  geom_bar(color='red', fill = I('#9d0944'))
+
+p11 <- ggplot(aes(x = alcohol), data = vinho_tinto) +
+  geom_bar(color='red', fill = I('#9d0944'))
+
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, ncol=2)
+
+```
+
+# Análise Univariada
+
+### Qual é a estrutura do conjunto de dados?
+O conjunto de dados possui 1599 observações e 13 variavéis, originalmente. Adicionalmente foi criada uma nova variavel para representar a variavel qualidade de forma categórica. E a maioria das observações enquada-se no valor de qualidade igual a 5, ou 6.
+
+### Quais são os principais atributos de interesse deste conjunto de dados?
+O atributo alvo com que estaremos trabalhando inicialmente é a variavel qualidade. E através do processo de EDA buscaremos identificar que outros atributos influenciam a qualidade.
+
+### Quais outros atributos você acha que podem lhe auxiliar na investigação destes atributos de interesse?
+Eu imagino que os atributos: alcohol, residual.sugar e fixed.acidity possam ser um ponto de partida interessante para a análise.
+
+### Você criou novas variáveis a partir dos atributos existentes no conjunto de dados?
+Sim, foi criada a variavel avaliacao para representar a variavel qualidade de forma categorica, facitando a visualizacao de algumas informações nos graficos plotados mais adiante.
+
+### Dos atributos investigados, distribuições incomuns foram encontradas? Você aplicou operações nos dados para limpá-los, ajustá-los ou mudar a forma dos dados? Se sim, por quê?
+Aparentemente todos os atributos seguem uma distribuição próxima ao normal, com exceção de
+residial.sugar, alcohol, citric.acid e total.sufur.dioxide que parecem ter uma cauda mais longa a direita. Também identifiquei a presença de outliers em praticamente todas as variáveis.
+
+# Seção de Gráficos Bivariados
+```{r echo=FALSE, Bivariate_Plots}
+#Criando uma matriz de correlação entre as variaveis
+ggpairs(vinho_tinto, axisLabels = 'internal')
+
+#Criando uma matriz de correlação entre as variaveis
+pairs.panels(vinho_tinto,pch=".", main="Correlação entre as variáveis")
+
+#As tres maiores correlações estão entre qualidade e: alcohol, volatile.acidity e sulphates
+
+#Box plot - Alcohol x quality, segmentado por Avaliacao
+ggplot(aes(x=quality, y=alcohol, color=avaliacao), data=vinho_tinto) +
+  geom_boxplot() +
+  geom_jitter(alpha=1/8) +
+  facet_wrap(~avaliacao) +
+  scale_color_brewer(type='qual')
+
+p1 <- ggplot(aes(x=avaliacao, y=alcohol), data=vinho_tinto) +
+  #geom_jitter(alpha=1/8) +
+  geom_boxplot() +
+  stat_summary(fun.y=mean, geom="point", shape=4)
+
+p2 <- ggplot(aes(x = quality, y = alcohol), data = vinho_tinto) +
+  geom_smooth(aes(color=avaliacao), stat = "summary", fun.y = mean)
+
+grid.arrange(p1, p2, ncol=2)
+
+#Box plot - Volatile.acidity x quality, segmentado por Avaliacao
+ggplot(aes(x=quality, y=volatile.acidity, color=avaliacao), data=vinho_tinto) +
+  geom_boxplot() +
+  geom_jitter(alpha=1/8) +
+  facet_wrap(~avaliacao) +
+  scale_color_brewer(type='qual')
+
+p1 <- ggplot(aes(x=avaliacao, y=volatile.acidity), data=vinho_tinto) +
+  #geom_jitter(alpha=1/8) +
+  geom_boxplot() +
+  stat_summary(fun.y=mean, geom="point", shape=4)
+
+
+p2 <- ggplot(aes(x = quality, y = volatile.acidity), data = vinho_tinto) +
+  geom_smooth(aes(color=avaliacao), stat = "summary", fun.y = mean)
+
+grid.arrange(p1, p2, ncol=2)
+
+
+
+
+#Box plot - sulphates x quality, segmentado por Avaliacao
+ggplot(aes(x=quality, y=sulphates, color=avaliacao), data=vinho_tinto) +
+  geom_boxplot() +
+  geom_jitter(alpha=1/8) +
+  facet_wrap(~avaliacao) +
+  scale_color_brewer(type='qual')
+
+p1 <- ggplot(aes(x=avaliacao, y=sulphates), data=vinho_tinto) +
+  #geom_jitter(alpha=1/8) +
+  geom_boxplot() +
+  stat_summary(fun.y=mean, geom="point", shape=4) +
+  scale_y_continuous(limits = c(0.4,0.9))
+
+p2 <- ggplot(aes(x = quality, y =sulphates), data = vinho_tinto) +
+  geom_point(alpha = 1/10, size = 1/2, position = 'jitter') +
+  geom_smooth(aes(), stat = "summary", fun.y = mean) +
+  scale_y_continuous(limits = c(0.4,0.9))
+
+grid.arrange(p1, p2, ncol=2)
+
+
+# Relacao Qualidade e tres variaveis com mais correlacao
+
+p1 <- ggplot(aes(x = alcohol, y =quality), data = vinho_tinto) +
+  geom_point(alpha = 1/10, size = 1/2, position = 'jitter') +
+  #geom_line(aes(), stat = "summary", fun.y = mean)
+  geom_smooth(se = FALSE,color='red')
+
+p2 <- ggplot(aes(x = volatile.acidity, y =quality), data = vinho_tinto) +
+  geom_point(alpha = 1/10, size = 1/2, position = 'jitter') +
+  #geom_line(aes(), stat = "summary", fun.y = mean)
+  geom_smooth(se = FALSE,color='red')
+
+p3 <- ggplot(aes(x = sulphates, y =quality), data = vinho_tinto) +
+  geom_point(alpha = 1/10, size = 1/2, position = 'jitter') +
+  #geom_line(aes(), stat = "summary", fun.y = mean)
+  geom_smooth(se = FALSE,color='red') +
+  scale_x_log10()
+
+grid.arrange(p1, p2, p3, ncol=3)
+
+###========================
+#A maior correlação entre variaveis esta entre fixed.acidity e density
+ggplot(aes(x=fixed.acidity,y=density), data= vinho_tinto) +
+      geom_point(color='#9d0944',alpha=1/2)+
+      geom_smooth(se = FALSE,color='red')+
+      xlab("Fixed acidity") + ylab("Density")
+
+# Coeficiente de correlacao entre fixed,acidity e density
+cor.test(vinho_tinto$fixed.acidity, vinho_tinto$density,method='pearson')
+
+#==========================
+
+```
+
+# Análise Bivariada
+
+### Discuta sobre alguns dos relacionamentos observados nesta parte da investigação. Como os atributos de interesse variaram no conjunto de dados?
+Ao analisar a matriz de correlação observei que as três maiores correlações estão entre  a variavel qualidade são com: alcohol, volatile.acidity e sulphates. Sendo que a correlação mais forte é com alcohol (0.476) e tem uma tendência positiva. Já com relação a variável volatile.acidity (-0.391) a tendência é negativa. E com a variável sulphates (0.251) a corelação é menor e positiva. No caso do gráfico entre sulphates e quality optei em representar a variável sulphates na escala logaritmica (log10), fazendo com que a distribuição aproximasse-se de um padrão normal.
+
+### Você observou algum relacionamento interessante entre os outros atributos (os que não são de interesse)?
+
+Existem outras correlações interessantes no conjunto de dados:
+
+* Alcohol e Density (-0.496), 
+* Volatile.acidity e Citric.acid (-0.552) e
+* fixed.acidity e density (0.668)
+
+Obs.: A relação entre free.sulfur.dioxide e total.sulfur.dioxide tem o mesmo valor de correlação (0.668) do par fixed.acidity e density, mas por elas já serem relacionadas por natureza optei por não considerá-las como um relacionamento interessante.
+
+### Qual foi o relacionamento mais forte encontrado?
+O relacionamento mais forte encontrado foi entre as variaveis:
+
+* fixed.acidity e pH (-0.683).
+
+# Seção de Gráficos Multivariados
+
+```{r echo=FALSE, Multivariate_Plots}
+#
+#Quality possui as maiores correlações com as variaveis: alcohol e volatile.acidity. No grafico abaixo relacionamos alcohol e volatile.acidity, destacando a variavel quality e segmentando a visualização por Avaliação.
+ggplot(data = vinho_tinto, aes(x = alcohol, y = volatile.acidity, color=as.factor(quality))) +
+    facet_wrap(~avaliacao) +
+    scale_x_continuous(lim = c(8, quantile(vinho_tinto$alcohol, 0.99))) +
+    scale_y_continuous(lim = c(0, quantile(vinho_tinto$volatile.acidity, 0.99))) +
+    geom_point(alpha = 0.3, size = 3, position = 'jitter') +
+  scale_color_brewer(type = 'qual',
+    guide = guide_legend(title = 'Avaliação', reverse = T,
+    override.aes = list(alpha = 1, size = 2)), palette = 1) +
+    stat_smooth(method = 'lm')
+
+ggplot(data = vinho_tinto, aes(x = fixed.acidity, y = density, color=as.factor(quality))) +
+    facet_wrap(~avaliacao) +
+    scale_x_continuous(lim = c(4, quantile(vinho_tinto$fixed.acidity, 0.99))) +
+    scale_y_continuous(lim = c(0.99, 1.005)) +
+    geom_point(alpha = 0.3, size = 1, position = 'jitter') +
+  scale_color_brewer(type = 'qual',
+    guide = guide_legend(title = 'Avaliação', reverse = T,
+    override.aes = list(alpha = 1, size = 2)), palette = 1) +
+    stat_smooth(method = 'lm')
+
+#Quality possui a maior correlação com alcohol (0.476), que por sua vez possui a maior correlação com density (-0.496). O grafico representa o relacionamento entre alcohol e density, destacando a variavel quality e segmentando a visualização por Avaliação.
+ggplot(data = vinho_tinto, aes(x = alcohol, y = density, color=as.factor(quality))) +
+    facet_wrap(~avaliacao) +
+    scale_x_continuous(lim = c(8, quantile(vinho_tinto$alcohol, 0.99))) +
+    scale_y_continuous(lim = c(0.99, 1.005)) +
+    geom_point(alpha = 0.3, size = 1, position = 'jitter') +
+  scale_color_brewer(type = 'qual',
+    guide = guide_legend(title = 'Avaliação', reverse = T,
+    override.aes = list(alpha = 1, size = 2)), palette = 1) +
+    stat_smooth(method = 'lm')
+
+#Quality também possui uma correlação significativa com volatile.acidity (-0.39), que por sua vez possui a maior correlação com citric.acid (-0.55). O grafico representa o relacionamento entre volatile.acidity e citric.acid, destacando a variavel quality e segmentando a visualização por Avaliação.
+ggplot(data = vinho_tinto, aes(x = volatile.acidity, y = citric.acid, color=avaliacao)) +
+    #facet_wrap(~avaliacao) +
+    scale_x_continuous(lim = c(0, quantile(vinho_tinto$volatile.acidity, 0.99))) +
+    scale_y_continuous(lim = c(0, quantile(vinho_tinto$citric.acid, 0.99))) +
+    geom_point(alpha = 0.3, size = 1, position = 'jitter') +
+  scale_color_brewer(type = 'qual',
+    guide = guide_legend(title = 'Avaliação', reverse = T,
+    override.aes = list(alpha = 1, size = 2)), palette = 1) +
+    stat_smooth(method = 'lm')
+
+
+#Como a maior correlacao é entre as variaveis fixed.acidity e pH, optei em analisar sua distribuição destacando a variavel quality e segmentando a visualização por Avaliação.
+ggplot(data = vinho_tinto, aes(x = fixed.acidity, y = pH, color=avaliacao)) +
+    facet_wrap(~avaliacao) +
+    scale_x_continuous(lim = c(4.5, quantile(vinho_tinto$fixed.acidity, 0.99))) +
+    scale_y_continuous(lim = c(2.6, quantile(vinho_tinto$pH, 0.99))) +
+    geom_point(alpha = 0.3, size = 1, position = 'jitter') +
+  scale_color_brewer(type = 'qual',
+    guide = guide_legend(title = 'Avaliação', reverse = T,
+    override.aes = list(alpha = 1, size = 2)), palette = 1) +
+    stat_smooth(method = 'lm')
+
+#====================
+
+#Investigação sobre a trabsformacao da variavel alcohol
+cuberoot_trans = function() trans_new('cuberoot',
+                                      transform = function(x) x^(1/3),
+                                      inverse = function(x) x^3)
+
+plot1 <- qplot(data = vinho_tinto, x = alcohol, fill = I('#099DD9')) + 
+  ggtitle('Alcohol')
+
+plot2 <- qplot(data = vinho_tinto, x = alcohol, fill = I('#F79420')) +
+  scale_x_log10() +
+  ggtitle('Alcohol (log10)')
+
+plot3 <- qplot(data = vinho_tinto, x = alcohol, fill = I('#9d0944')) +
+  scale_x_continuous(trans = cuberoot_trans())+
+  ggtitle('Alcohol (cuberoot)')
+
+grid.arrange(plot1, plot2, plot3, ncol = 3)
+
+```
+
+# Análise Multivariada
+
+### Discuta sobre os relacionamentos observados nesta parte da investigação. Quais atributos que fortaleceram os demais na observação das variáveis de interesse?
+Iniciei investigando o relacionamento entre as variáveis alcohol e volatile.acidity por terem o maior coeficiente de correlação com quality.E na representação gráfica é possível identificar a segmentação dos vinhos por teor alcoólico: vinhos com uma avaliação superior tendem a ter mais alcool. E os vinhos de avaliação inferior tendem para uma acidez maior.
+
+### Interações surpreendentes e/ou interessantes foram encontradas entre os atributos?
+Investiguei os relacionamentos entre:
+* Alcohol e Density,
+* Volatile.acidity e Citric.acid e
+* Fixed.acidity e pH
+
+Sendo que em ambos os casos não houve reflexos significativos na variável quality.
+
+Ao contrário de minhas suspeitas iniciais a variável residual.sugar não apresentou uma correlação que justificasse uma investigação aprofundada e acabou sendo descartada.
+
+### OPCIONAL: Modelos foram criados usando este conjunto de dados? Discuta sobre os pontos fortes e as limitações do seu modelo.
+Infelizmente não foi possível explorar a criação de modelos, mas essa possibilidade existe para conjunto de dados, tanto pelo tamanho do conjunto de amostras, quanto pelos relacionamentos entre as variaveis.
+
+------
+
+# Gráficos Finais e Sumário
+
+### Primeiro Gráfico
+```{r echo=FALSE, Plot_One}
+#Histograma da variavel qualidade segmentada por avaliacao
+ggplot(aes(quality, fill = avaliacao), data = vinho_tinto) +
+  geom_histogram() +
+  ggtitle('Histograma da Variável Qualidade, segmentada por Avaliação')+
+  xlab("Nota de Qualidade") + 
+  ylab("Nº de observações")
+
+```
+
+### Descrição do Primeiro Gráfico
+O nosso conjunto de dados possui 1599 registros relacionados a vinhos tintos, sendo que cada um deles possui uma nota de qualidade. A representação gráfica apresenta estes registros num histograma, que é segmentado pela variavel avaliação, que nada mais é do que um categorização da nota de qualidade. Podemos verificar que a maior parte dos nossos registros pertencem a avaliação média.
+
+### Segundo Gráfico
+```{r echo=FALSE, Plot_Two}
+#Criando uma matriz de correlação entre as variaveis
+pairs.panels(vinho_tinto,pch=".", main="Correlação entre as variáveis")
+```
+
+### Descrição do Segundo Gráfico
+Pela matriz de correlação é possível identificarmos os relacionamentos que possuem os maiores coeficientes, para posteriormente direcionarmos as nossas análises. No caso, nossa varíavel de interesse é quality e as variáveis com maior correlação são: alcohol, volatile.acidity e sulphates.
+
+### Terceiro Gráfico
+```{r echo=FALSE, Plot_Three}
+
+ggplot(data = vinho_tinto, aes(x = alcohol, y = volatile.acidity, color=as.factor(quality))) +
+    facet_wrap(~avaliacao) +
+    scale_x_continuous(lim = c(8, quantile(vinho_tinto$alcohol, 0.99))) +
+    scale_y_continuous(lim = c(0, quantile(vinho_tinto$volatile.acidity, 0.99))) +
+    geom_point(alpha = 0.3, size = 3, position = 'jitter') +
+  scale_color_brewer(type = 'qual',
+    guide = guide_legend(title = 'Qualidade', reverse = T,
+    override.aes = list(alpha = 1, size = 2)), palette = 1) +
+    stat_smooth(method = 'lm') +
+  ggtitle('Relação entre Teor Alcoólico e Acidez, segmentada por Avaliação')+
+  xlab("Teor Alcoólico") + 
+  ylab("Acidez (volatile.acidity)")
+```
+
+### Descrição do Terceiro Gráfico
+A variável quality possui as maiores correlações com as variaveis: alcohol e volatile.acidity. No gráfico relacionamos alcohol e volatile.acidity, destacando a variável quality e segmentando a visualização por Avaliação. E podemos observar que há uma segmentação dos vinhos por teor alcoólico: vinhos com uma avaliação superior tendem a ter mais alcool. E os vinhos de avaliação inferior tendem para uma acidez maior.
+
+------
+
+# Reflexão
+O nosso conjunto de dados possui 1599 observações e 13 variaveis, algumas delas relacionadas as propriedades químicas dos vinhos. Nossa intenção com este conjunto de dados é investigar quais propriedades químicas influenciam a qualidade dos vinhos tintos.
+
+Inicialmente fomos conhecendo o conjunto de dados e obsevando o comportamento de cada uma das variáveis e ao elaborarmos a matriz de correlação foi possível identificar as variaveis que tem maior relação com qualidade, o que permitiu a condução de investigações mais aprofundadas.
+
+Algumas suspeitas iniciais, como a influência do açucar residual na avaliação dos vinhos, mostraram-se com baixo impacto na avaliação final.
+
+Para evitar a influencia de valores extermos (outliers), algumas representações foram restringidas à 99% das amostras.
+
+Pelas análises realizadas foi possível constatar que o teor alcoólico e a acidez influenciam na avaliação de qualidade que um vinho receberá, mas outros fatores também podem refletir nesta avaliação, pois alguns vinhos com as notas mais altas possuem teor alcoólico e a acidez próximos aos vinhos de avaliação média.
+
+-------
+
+#Referências utilizadas:
+
+* https://s3.amazonaws.com/content.udacity-data.com/courses/ud651/diamondsExample_2016-05.html
+* http://rstudio-pubs-static.s3.amazonaws.com/198466_b17daa66ce6748a6a91cd27017608720.html
+* http://rstudio-pubs-static.s3.amazonaws.com/53416_83b9685bc8c54afebcbb1e65a7c688fc.html
+* https://rpubs.com/inageorgescu/whitewine2
