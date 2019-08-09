@@ -153,8 +153,9 @@ plotados mais adiante.
 
 ### Dos atributos investigados, distribuições incomuns foram encontradas? Você aplicou operações nos dados para limpá-los, ajustá-los ou mudar a forma dos dados? Se sim, por quê?
 Aparentemente todos os atributos seguem uma distribuição próxima ao normal, com 
-exceção de residial.sugar, alcohol, citric.acid e total.sufur.dioxide que parecem 
-ter uma cauda mais longa a direita. Também identifiquei a presença de outliers em praticamente todas as variáveis.
+exceção de residial.sugar, alcohol, citric.acid e total.sufur.dioxide que 
+parecem ter uma cauda mais longa a direita. Também identifiquei a presença de 
+outliers em praticamente todas as variáveis.
 
 # Seção de Gráficos Bivariados
 
@@ -254,8 +255,9 @@ grid.arrange(p1, p2, ncol=2)
 ### Box plot entre Sulphates e Quality
 
 Além das correlações apresentadas anteriormente, há uma correlação significativa 
-entre as variáveis sulphates e quality. Assim, podemos analisar adistribuição das observações entre as categorias de Avaliação. E podemos observar que a variável
-sulphates muda de acordo com as notas de qualidade aummentam.
+entre as variáveis sulphates e quality. Assim, podemos analisar adistribuição 
+das observações entre as categorias de Avaliação. E podemos observar que a 
+variável sulphates muda de acordo com as notas de qualidade aummentam.
 
 ```{r}
 #Box plot - sulphates x quality, segmentado por Avaliacao
@@ -287,10 +289,10 @@ grid.arrange(p1, p2, ncol=2)
 ### Relação entre Qualidade e as três variáveis com maior correlação
 
 Após analisarmos cada uma das uma das correlações de forma individualizada, 
-podemos construir uma visão consolidada entre elas. E verificamos o comportamento
-de cada uma delas com o aumento das notas de qualidade, onde alcohol tem uma
-variação positiva, volatile.acidity negativa e sulphates segue uma distribuição
-normal.
+podemos construir uma visão consolidada entre elas. E verificamos o 
+comportamento de cada uma delas com o aumento das notas de qualidade, onde 
+alcohol tem uma variação positiva, volatile.acidity negativa e sulphates segue 
+uma distribuição normal.
 
 ```{r}
 # Relacao Qualidade e tres variaveis com mais correlacao
@@ -329,8 +331,8 @@ grid.arrange(p1, p2, p3, ncol=3)
 Uma das correlações que me chamaram a atenção na matriz de correlação, foi a que
 existe entre as variáveis fixed.acidity e density (correlação de 0.668). Dessa 
 forma considerei importante avaliá-la. E apesar de ser possível verificar 
-constatar um comportamento dependente, devido a correlação com quality ser baixa, 
-uma investigação mais aprofundada é descartada.
+constatar um comportamento dependente, devido a correlação com quality ser 
+baixa, uma investigação mais aprofundada é descartada.
 
 ```{r}
 ###========================
@@ -350,14 +352,14 @@ ggplot(aes(x=fixed.acidity,y=density), data= vinho_tinto) +
 # Análise Bivariada
 
 ### Discuta sobre alguns dos relacionamentos observados nesta parte da investigação. Como os atributos de interesse variaram no conjunto de dados?
-Ao analisar a matriz de correlação observei que as três maiores correlações estão 
-entre  a variavel qualidade são com: alcohol, volatile.acidity e sulphates. Sendo 
-que a correlação mais forte é com alcohol (0.476) e tem uma tendência positiva. 
-Já com relação a variável volatile.acidity (-0.391) a tendência é negativa. E com 
-a variável sulphates (0.251) a corelação é menor e positiva. No caso do gráfico 
-entre sulphates e quality optei em representar a variável sulphates na escala 
-logaritmica (log10), fazendo com que a distribuição aproximasse-se de um padrão 
-normal.
+Ao analisar a matriz de correlação observei que as três maiores correlações 
+estão entre  a variavel qualidade são com: alcohol, volatile.acidity e sulphates. 
+Sendo que a correlação mais forte é com alcohol (0.476) e tem uma tendência 
+positiva. Já com relação a variável volatile.acidity (-0.391) a tendência é 
+negativa. E com a variável sulphates (0.251) a corelação é menor e positiva. 
+No caso do gráfico entre sulphates e quality optei em representar a variável 
+sulphates na escala logaritmica (log10), fazendo com que a distribuição 
+aproximasse-se de um padrão normal.
 
 ### Você observou algum relacionamento interessante entre os outros atributos (os que não são de interesse)?
 
@@ -368,8 +370,9 @@ Existem outras correlações interessantes no conjunto de dados:
 * fixed.acidity e density (0.668)
 
 Obs.: A relação entre free.sulfur.dioxide e total.sulfur.dioxide tem o mesmo 
-valor de correlação (0.668) do par fixed.acidity e density, mas por elas já serem relacionadas por natureza optei por não considerá-las como um relacionamento 
-interessante.
+valor de correlação (0.668) do par fixed.acidity e density, mas por elas já 
+serem relacionadas por natureza optei por não considerá-las como um 
+relacionamento interessante.
 
 ### Qual foi o relacionamento mais forte encontrado?
 O relacionamento mais forte encontrado foi entre as variaveis:
@@ -441,7 +444,8 @@ grid.arrange(plot1, plot2, plot3, ncol = 3)
 
 Uma outra investigação possível é analisar o comportamento das variáveis alcohol
 e density, segmentando-a pelo grau de avaliação. Mas apesar da suspeita possuir 
-fundamento não foi evidenciado nenhum comportamento distinto no conjunto de dados.
+fundamento não foi evidenciado nenhum comportamento distinto no conjunto de 
+dados.
 
 ```{r}
 #Quality possui a maior correlação com alcohol (0.476), que por sua vez possui a maior correlação com density (-0.496). O grafico representa o relacionamento entre alcohol e density, destacando a variavel quality e segmentando a visualização por Avaliação.
@@ -461,8 +465,10 @@ ggplot(data = vinho_tinto, aes(x = alcohol, y = density, color=as.factor(quality
 
 ### Correlação entre Volatile.acidity, Citric.acid e Quality
 
-Mais uma investigação realizada foi da relação entre volatile.acidity e citric.acid,
-com a identificação do grau de avaliação no mesmo gráfico. Nesse caso também não foi evidenciado nenhum comportamento distinto no conjunto de dados.
+Mais uma investigação realizada foi da relação entre volatile.acidity e 
+citric.acid, com a identificação do grau de avaliação no mesmo gráfico. Nesse 
+caso também não foi evidenciado nenhum comportamento distinto no conjunto de 
+dados.
 
 ```{r}
 #Quality também possui uma correlação significativa com volatile.acidity (-0.39), que por sua vez possui a maior correlação com citric.acid (-0.55). O grafico representa o relacionamento entre volatile.acidity e citric.acid, destacando a variavel quality e segmentando a visualização por Avaliação.
@@ -509,11 +515,11 @@ ggplot(data = vinho_tinto, aes(x = fixed.acidity, y = pH, color=avaliacao)) +
 # Análise Multivariada
 
 ### Discuta sobre os relacionamentos observados nesta parte da investigação. Quais atributos que fortaleceram os demais na observação das variáveis de interesse?
-Iniciei investigando o relacionamento entre as variáveis alcohol e volatile.acidity 
-por terem o maior coeficiente de correlação com quality.E na representação gráfica 
-é possível identificar a segmentação dos vinhos por teor alcoólico: vinhos com uma 
-avaliação superior tendem a ter mais alcool. E os vinhos de avaliação inferior 
-tendem para uma acidez maior.
+Iniciei investigando o relacionamento entre as variáveis alcohol e 
+volatile.aciditypor terem o maior coeficiente de correlação com quality. E na 
+representação gráfica é possível identificar a segmentação dos vinhos por teor 
+alcoólico: vinhos com uma avaliação superior tendem a ter mais alcool. E os 
+vinhos de avaliação inferior tendem para uma acidez maior.
 
 ### Interações surpreendentes e/ou interessantes foram encontradas entre os atributos?
 Investiguei os relacionamentos entre:
@@ -521,16 +527,17 @@ Investiguei os relacionamentos entre:
 * Volatile.acidity e Citric.acid e
 * Fixed.acidity e pH
 
-Sendo que em ambos os casos não houve reflexos significativos na variável quality.
+Sendo que em ambos os casos não houve reflexos significativos na variável 
+quality.
 
-Ao contrário de minhas suspeitas iniciais a variável residual.sugar não apresentou 
-uma correlação que justificasse uma investigação aprofundada e acabou sendo 
-descartada.
+Ao contrário de minhas suspeitas iniciais a variável residual.sugar não 
+apresentou uma correlação que justificasse uma investigação aprofundada e acabou 
+sendo descartada.
 
 ### OPCIONAL: Modelos foram criados usando este conjunto de dados? Discuta sobre os pontos fortes e as limitações do seu modelo.
-Infelizmente não foi possível explorar a criação de modelos, mas essa possibilidade 
-existe para conjunto de dados, tanto pelo tamanho do conjunto de amostras, quanto
-pelos relacionamentos entre as variaveis.
+Infelizmente não foi possível explorar a criação de modelos, mas essa 
+possibilidade existe para conjunto de dados, tanto pelo tamanho do conjunto de 
+amostras, quantopelos relacionamentos entre as variaveis.
 
 ------
 
@@ -550,9 +557,9 @@ ggplot(aes(quality, fill = avaliacao), data = vinho_tinto) +
 ### Descrição do Primeiro Gráfico
 O nosso conjunto de dados possui 1599 registros relacionados a vinhos tintos, 
 sendo que cada um deles possui uma nota de qualidade. A representação gráfica 
-apresenta estes registros num histograma, que é segmentado pela variavel avaliação, 
-que nada mais é do que um categorização da nota de qualidade. Podemos verificar
-que a maior parte dos nossos registros pertencem a avaliação média.
+apresenta estes registros num histograma, que é segmentado pela variavel 
+avaliação, que nada mais é do que um categorização da nota de qualidade. Podemos 
+verificar que a maior parte dos nossos registros pertencem a avaliação média.
 
 ### Segundo Gráfico
 ```{r echo=FALSE, Plot_Two}
@@ -573,10 +580,10 @@ corrplot(M, method="number", tl.cex = 0.8, number.cex=0.70, tl.col="black",
 ```
 
 ### Descrição do Segundo Gráfico
-Pela matriz de correlação é possível identificarmos os relacionamentos que possuem 
-os maiores coeficientes, para posteriormente direcionarmos as nossas análises. 
-No caso, nossa varíavel de interesse é quality e as variáveis com maior correlação 
-são: alcohol, volatile.acidity e sulphates.
+Pela matriz de correlação é possível identificarmos os relacionamentos que 
+possuem os maiores coeficientes, para posteriormente direcionarmos as nossas 
+análises. No caso, nossa varíavel de interesse é quality e as variáveis com 
+maior correlação são: alcohol, volatile.acidity e sulphates.
 
 ### Terceiro Gráfico
 ```{r echo=FALSE, Plot_Three}
@@ -597,16 +604,17 @@ ggplot(data = vinho_tinto, aes(x = alcohol, y = volatile.acidity, color=as.facto
 
 ### Descrição do Terceiro Gráfico
 A variável quality possui as maiores correlações com as variaveis: alcohol e volatile.acidity. No gráfico relacionamos alcohol e volatile.acidity, destacando 
-a variável quality e segmentando a visualização por Avaliação. E podemos observar
-que há uma segmentação dos vinhos por teor alcoólico: vinhos com uma avaliação 
-superior tendem a ter mais alcool. E os vinhos de avaliação inferior tendem para
-uma acidez maior.
+a variável quality e segmentando a visualização por Avaliação. E podemos 
+observar que há uma segmentação dos vinhos por teor alcoólico: vinhos com uma 
+avaliação superior tendem a ter mais alcool. E os vinhos de avaliação inferior 
+tendem para uma acidez maior.
 
 ------
 
 # Reflexão
-O nosso conjunto de dados possui 1599 observações e 13 variaveis, algumas delas relacionadas as propriedades químicas dos vinhos. Nossa intenção com este conjunto 
-de dados é investigar quais propriedades químicas influenciam a qualidade dos vinhos tintos.
+O nosso conjunto de dados possui 1599 observações e 13 variaveis, algumas delas relacionadas as propriedades químicas dos vinhos. Nossa intenção com este 
+conjunto de dados é investigar quais propriedades químicas influenciam a 
+qualidade dos vinhos tintos.
 
 Inicialmente fomos conhecendo o conjunto de dados e obsevando o comportamento de 
 cada uma das variáveis e ao elaborarmos a matriz de correlação foi possível 
@@ -620,14 +628,15 @@ Para evitar a influencia de valores extermos (outliers), algumas representaçõe
 foram restringidas à 99% das amostras.
 
 Pelas análises realizadas foi possível constatar que o teor alcoólico e a acidez influenciam na avaliação de qualidade que um vinho receberá, mas outros fatores 
-também podem refletir nesta avaliação, pois alguns vinhos com as notas mais altas 
-possuem teor alcoólico e a acidez próximos aos vinhos de avaliação média.
+também podem refletir nesta avaliação, pois alguns vinhos com as notas mais 
+altas possuem teor alcoólico e a acidez próximos aos vinhos de avaliação média.
 
 Nos próximos estudos pretendo explorar ainda mais o conjunto de dados e tentar 
 extrair algum modelo preditivo que determine qual seria a nota de qualidade 
 atribuída a um vinho a partir de algumas características químicas.
-Outro estudo que pretendo realizar é  a investigação se os fatores que influenciam
-a nota de qualidade de um vinho tinto são os mesmos para um vinho branco.
+Outro estudo que pretendo realizar é  a investigação se os fatores que 
+influenciam a nota de qualidade de um vinho tinto são os mesmos para um vinho 
+branco.
 
 -------
 
